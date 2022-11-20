@@ -5,6 +5,7 @@ import 'package:fruity/infra/repository/species_http_repository.dart';
 void main(){
   test('Should instantiate', () {
     SpeciesRepository repository = SpeciesHTTPRepository();
+    expect(repository.runtimeType, SpeciesHTTPRepository);
   });
 
 }
