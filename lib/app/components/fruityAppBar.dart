@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruity/app/components/profileButton.dart';
 
-class FruityAppBar extends StatelessWidget with PreferredSizeWidget {
+class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   final Size preferredSize;
 

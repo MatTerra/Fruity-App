@@ -23,15 +23,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -65,5 +59,25 @@ class DefaultFirebaseOptions {
     messagingSenderId: '113528284500',
     projectId: 'fruity-5ca4d',
     storageBucket: 'fruity-5ca4d.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyD2wdv67fWF8sYcTyXMiD3hLCrxbrIs59I',
+    appId: '1:113528284500:ios:a51f3e301bfe99a2a114c1',
+    messagingSenderId: '113528284500',
+    projectId: 'fruity-5ca4d',
+    storageBucket: 'fruity-5ca4d.appspot.com',
+    iosClientId: '113528284500-5emmu2c2g05gkg6n7e9l7u3bnvu8pofk.apps.googleusercontent.com',
+    iosBundleId: 'com.example.fruity',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyD2wdv67fWF8sYcTyXMiD3hLCrxbrIs59I',
+    appId: '1:113528284500:ios:a51f3e301bfe99a2a114c1',
+    messagingSenderId: '113528284500',
+    projectId: 'fruity-5ca4d',
+    storageBucket: 'fruity-5ca4d.appspot.com',
+    iosClientId: '113528284500-5emmu2c2g05gkg6n7e9l7u3bnvu8pofk.apps.googleusercontent.com',
+    iosBundleId: 'com.example.fruity',
   );
 }

@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterfire_ui/auth.dart';
 import 'package:fruity/pages/homePage.dart';
 
 import 'firebase_options.dart';
@@ -11,9 +11,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FlutterFireUIAuth.configureProviders([
-    const EmailProviderConfiguration(),
-  ]);
   // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
 
   runApp(const MyApp());
@@ -25,6 +22,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final providers = [EmailAuthProvider()];
+
     return MaterialApp(
       title: "Fruity",
       theme: ThemeData(
@@ -36,6 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) {
           return SignInScreen(
+            providers: providers,
             actions: [
               ForgotPasswordAction((context, email) {
                 Navigator.pushNamed(
@@ -89,11 +89,11 @@ class MyApp extends StatelessWidget {
             // sideBuilder: sideIcon(Icons.verified),
             // actionCodeSettings: actionCodeSettings,
             actions: [
-              EmailVerified(() {
+              EmailVerifiedAction(() {
                 Navigator.pushReplacementNamed(context, '/profile');
               }),
-              Cancel((context) {
-                FlutterFireUIAuth.signOut(context: context);
+              AuthCancelledAction((context) {
+                FirebaseUIAuth.signOut(context: context);
                 Navigator.pushReplacementNamed(context, '/');
               }),
             ],
