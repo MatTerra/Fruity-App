@@ -7,6 +7,6 @@ abstract class HTTPService {
     _defaultHeaders=defaultHeaders;
   }
 
-  Future<Map<String, dynamic>?> get(String path,
+  Future<dynamic> get(String path,
       {Map<String, String> query = const {}, Map<String, String>? headers});
 }

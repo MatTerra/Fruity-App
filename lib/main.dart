@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fruity/pages/homePage.dart';
+import 'package:fruity/pages/all_species_page.dart';
 
 import 'firebase_options.dart';
 
@@ -121,7 +121,7 @@ class MyApp extends StatelessWidget {
           );
         },
         '/home': (context) {
-          return const MyHomePage(title: 'Fruity');
+          return AllSpeciesPage();
         }
       },
     );
