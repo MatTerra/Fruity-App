@@ -112,7 +112,7 @@ class SpeciesDetailPage extends StatelessWidget {
                 padding:
                     const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
                 child: Text(
-                  species.description! * 1000,
+                  species.description!,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
                 )),
           ]))
