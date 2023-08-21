@@ -1,12 +1,10 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fruity/app/components/fruityAppBar.dart';
 import 'package:fruity/domain/entities/species.dart';
 
 class SpeciesDetailPage extends StatelessWidget {
   final Species species;
-  late String title;
 
   String toMonthName(month) {
     const months = [
@@ -26,9 +24,7 @@ class SpeciesDetailPage extends StatelessWidget {
     return months[month - 1];
   }
 
-  SpeciesDetailPage({Key? key, required this.species}) : super(key: key) {
-    title = species.scientificName;
-  }
+  SpeciesDetailPage({Key? key, required this.species}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +35,7 @@ class SpeciesDetailPage extends StatelessWidget {
           SliverAppBar(
             pinned: true,
             title: Text(
-              title,
+              species.scientificName,
               style: const TextStyle(fontStyle: FontStyle.italic),
             ),
             expandedHeight: 350.0,
@@ -99,7 +95,7 @@ class SpeciesDetailPage extends StatelessWidget {
                     const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
                 child: Text(
                   "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
                 )),
             const Padding(
                 padding: EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
@@ -113,7 +109,7 @@ class SpeciesDetailPage extends StatelessWidget {
                     const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
                 child: Text(
                   species.description!,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
                 )),
           ]))
         ],
