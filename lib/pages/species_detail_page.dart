@@ -24,7 +24,7 @@ class SpeciesDetailPage extends StatelessWidget {
     return months[month - 1];
   }
 
-  SpeciesDetailPage({Key? key, required this.species}) : super(key: key);
+  const SpeciesDetailPage({Key? key, required this.species}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
