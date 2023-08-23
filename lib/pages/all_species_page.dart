@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fruity/domain/repository/species_repository.dart';
 import 'package:fruity/infra/repository/species_http_repository.dart';
+import 'package:fruity/pages/propose_species.dart';
 import 'package:fruity/pages/species_detail_page.dart';
 
 import '../app/components/fruityAppBar.dart';
@@ -59,13 +60,19 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
                     height: 50,
                     width: 50,
                     child: CircleAvatar(
-                      backgroundImage: specie.picturesUrl!.isNotEmpty ? NetworkImage(specie.picturesUrl![0]) : AssetImage('assets/tree-silhouette.png') as ImageProvider,
+                      backgroundImage: specie.picturesUrl!.isNotEmpty
+                          ? NetworkImage(specie.picturesUrl![0])
+                          : AssetImage('assets/tree-silhouette.png')
+                              as ImageProvider,
                     ),
                   ),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(specie.scientificName, style: const TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+                      Text(specie.scientificName,
+                          style: const TextStyle(
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.bold)),
                       Text(specie.popularNames!.join(", ")),
                       const SizedBox(
                         height: 7,
@@ -79,6 +86,16 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
                   )),
             ),
           ]),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ProposeSpeciesPage()));
+          },
+          tooltip: 'Propor nova espécie',
+          child: const Icon(Icons.add),
         ));
   }
 }
