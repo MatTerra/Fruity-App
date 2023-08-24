@@ -1,8 +1,16 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fruity/app/components/fruityAppBar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fruity/pages/species_detail_page.dart';
+
+import '../domain/entities/species.dart';
+import '../domain/repository/species_repository.dart';
+import '../infra/repository/species_http_repository.dart';
 
 class ProposeSpeciesPage extends StatefulWidget {
   const ProposeSpeciesPage({Key? key}) : super(key: key);
@@ -13,6 +21,7 @@ class ProposeSpeciesPage extends StatefulWidget {
 
 class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
   final _formKey = GlobalKey<FormBuilderState>();
+  late SpeciesRepository repository;
 
   static List<String> popularNames = [];
 
@@ -43,6 +52,10 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
         popularNames.add("");
       });
     }
+
+    SpeciesHTTPRepository.create().then((repository) {
+      this.repository = repository;
+    });
 
     super.initState();
   }
@@ -81,6 +94,8 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
                           validator: FormBuilderValidators.required(),
                           minLines: 1,
                           maxLines: 5,
+                          maxLength: 255,
+                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
                           decoration:
                               const InputDecoration(label: Text('Descrição')),
                         ),
@@ -90,24 +105,46 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
                             Expanded(
                               child: MaterialButton(
                                 color: Theme.of(context).colorScheme.secondary,
+                                onPressed: submit,
                                 child: const Text(
                                   "Enviar",
                                   style: TextStyle(color: Colors.white),
                                 ),
-                                onPressed: () {
-                                  _formKey.currentState!.saveAndValidate();
-                                  setState(() {
-                                    savedValue = _formKey.currentState?.value
-                                            .toString() ??
-                                        '';
-                                  });
-                                },
                               ),
                             ),
                           ],
                         ),
                       ],
                     )))));
+  }
+
+  void submit() {
+    _formKey.currentState!.saveAndValidate();
+    var formValues = _formKey.currentState!.value;
+    var species = Species(
+        creator: FirebaseAuth.instance.currentUser!.uid,
+        scientificName: formValues['scientificName'],
+        popularNames: formValues['popularNames'] ?? [],
+        description: formValues['description'] ?? '',
+        links: [],
+        picturesUrl: [],
+        seasonStartMonth: 1,
+        seasonEndMonth: 2);
+    if (_formKey.currentState!.isValid) {
+      repository.createSpecies(species).then(goToNewSpeciesDetails);
+    }
+  }
+
+  void goToNewSpeciesDetails(value) {
+    _formKey.currentState?.reset();
+    setState(() {
+      savedValue = '';
+    });
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SpeciesDetailPage(species: value)),
+    ModalRoute.withName("/home"));
   }
 }
 

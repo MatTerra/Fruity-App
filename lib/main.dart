@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fruity/pages/all_species_page.dart';
 
 import 'firebase_options.dart';
@@ -11,6 +15,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
+
   // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
 
   runApp(const MyApp());

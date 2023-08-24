@@ -6,14 +6,20 @@ class SpeciesInMemoryRepository implements SpeciesRepository {
   final List<String> calls = <String>[];
 
   @override
-  Species? getSpecies(String id) {
+  Future<Species?> getSpecies(String id) {
     calls.add("getSpecies($id)");
-    return species
+    return Future(() => species
         .cast<Species?>()
-        .firstWhere((element) => element!.id == id, orElse: () => null);
+        .firstWhere((element) => element!.id == id, orElse: () => null));
   }
 
-  void createSpecies(Species speciesToAdd){
+  Future<Species> createSpecies(Species speciesToAdd) {
     species.add(speciesToAdd);
+    return Future(() => speciesToAdd);
+  }
+
+  @override
+  Future<List<Species>> getAllSpecies() {
+    return Future(() => species);
   }
 }

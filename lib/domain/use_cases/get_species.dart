@@ -18,7 +18,7 @@ class GetSpecies{
 
   GetSpecies(this.repository);
 
-  GetSpeciesOutput execute(GetSpeciesInput input){
-    return GetSpeciesOutput(repository.getSpecies(input.id));
+  Future<GetSpeciesOutput> execute(GetSpeciesInput input) async {
+    return GetSpeciesOutput(await repository.getSpecies(input.id));
   }
 }
