@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAlKOzpPdVjitM9FN0sxE2u4JuTs2MeGo4',
-    appId: '1:113528284500:android:19417d97692a0d45a114c1',
+    appId: '1:113528284500:android:5be42157f9608fffa114c1',
     messagingSenderId: '113528284500',
     projectId: 'fruity-5ca4d',
     storageBucket: 'fruity-5ca4d.appspot.com',
@@ -63,21 +63,21 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD2wdv67fWF8sYcTyXMiD3hLCrxbrIs59I',
-    appId: '1:113528284500:ios:a51f3e301bfe99a2a114c1',
+    appId: '1:113528284500:ios:a88a468d72b0ecc8a114c1',
     messagingSenderId: '113528284500',
     projectId: 'fruity-5ca4d',
     storageBucket: 'fruity-5ca4d.appspot.com',
-    iosClientId: '113528284500-5emmu2c2g05gkg6n7e9l7u3bnvu8pofk.apps.googleusercontent.com',
-    iosBundleId: 'com.example.fruity',
+    iosClientId: '113528284500-k56uub5r8cma35nc5u5q67k1np34nrm4.apps.googleusercontent.com',
+    iosBundleId: 'br.com.matterra.fruity',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyD2wdv67fWF8sYcTyXMiD3hLCrxbrIs59I',
-    appId: '1:113528284500:ios:a51f3e301bfe99a2a114c1',
+    appId: '1:113528284500:ios:a88a468d72b0ecc8a114c1',
     messagingSenderId: '113528284500',
     projectId: 'fruity-5ca4d',
     storageBucket: 'fruity-5ca4d.appspot.com',
-    iosClientId: '113528284500-5emmu2c2g05gkg6n7e9l7u3bnvu8pofk.apps.googleusercontent.com',
-    iosBundleId: 'com.example.fruity',
+    iosClientId: '113528284500-k56uub5r8cma35nc5u5q67k1np34nrm4.apps.googleusercontent.com',
+    iosBundleId: 'br.com.matterra.fruity',
   );
 }

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       ),
       locale: const Locale.fromSubtags(countryCode: "br", languageCode: "pt"),
       initialRoute:
-          FirebaseAuth.instance.currentUser == null ? '/sign-in' : '/home',
+          FirebaseAuth.instance.currentUser == null ? '/' : '/home',
       routes: {
         '/': (context) {
           return SignInScreen(
