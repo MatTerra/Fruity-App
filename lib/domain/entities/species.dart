@@ -24,12 +24,25 @@ class Species {
         creator = json['creator'],
         scientificName = formatName(json['scientific_name']),
         popularNames =
-        List<String>.from(json['popular_names']).map(formatName).toList(),
+        parseSet(json['popular_names'] as String).map(formatName).toList(),
         description = json['description'],
-        links = List<String>.from(json['links']),
-        picturesUrl = List<String>.from(json['pictures_url']),
+        links = parseSet(json['links'] as String),
+        picturesUrl = parseSet(json['pictures_url'] as String),
         seasonStartMonth = json['season_start_month'],
         seasonEndMonth = json['season_end_month'];
+
+  static List<String> parseSet(String set) {
+    set = set
+        .trim();
+    set = set
+        .replaceAll("{", "")
+        .replaceAll("}", "");
+    var list = set
+        .split(",");
+    return list
+        .map((e) => e.trim())
+        .toList();
+  }
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
@@ -38,7 +51,7 @@ class Species {
       'popular_names': popularNames ?? [],
       'description': description ?? '',
       'links': links ?? [],
-      'pictures_url': picturesUrl??[],
+      'pictures_url': picturesUrl ?? [],
     };
 
     if (id != null) {
@@ -53,6 +66,6 @@ class Species {
     return json;
   }
 
-  static String formatName(name) =>
-      "${name[0].toUpperCase()}${name.substring(1)}";
+  static String formatName(String name) =>
+      name.isNotEmpty ? "${name[0].toUpperCase()}${name.substring(1)}" : "";
 }

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fruity/pages/all_species_page.dart';
@@ -15,9 +16,13 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  ByteData data = await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
-  SecurityContext.defaultContext.setTrustedCertificatesBytes(data.buffer.asUint8List());
 
+  if (!kIsWeb) {
+    ByteData data =
+        await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+    SecurityContext.defaultContext
+        .setTrustedCertificatesBytes(data.buffer.asUint8List());
+  }
   // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
 
   runApp(const MyApp());
@@ -36,13 +41,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      locale: const Locale.fromSubtags(countryCode: "br", languageCode: "pt"),
-      initialRoute:
-          FirebaseAuth.instance.currentUser == null ? '/' : '/home',
+      locale: const Locale("pt", "BR"),
+      initialRoute: FirebaseAuth.instance.currentUser == null ? '/' : '/home',
       routes: {
         '/': (context) {
           return SignInScreen(
             providers: providers,
+            headerBuilder: (context, constraints, shrinkOffset) {
+              return Padding(
+                padding: const EdgeInsets.all(20),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.asset('assets/manga.png'),
+                ),
+              );
+            },
             actions: [
               ForgotPasswordAction((context, email) {
                 Navigator.pushNamed(

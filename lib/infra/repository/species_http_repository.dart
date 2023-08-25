@@ -39,6 +39,14 @@ class SpeciesHTTPRepository implements SpeciesRepository {
   }
 
   @override
+  Future<List<Species>> getPendingSpecies() async {
+    List<dynamic> speciesList =
+    (await httpService.get("/v1/species/pending") as List)[1] as List;
+
+    return speciesList.map((s) => Species.fromJson(s)).toList();
+  }
+
+  @override
   Future<Species> createSpecies(Species species) async {
     species.id = await httpService.post("/v1/species", jsonEncode(species));
 

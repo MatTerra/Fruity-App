@@ -9,9 +9,9 @@ import '../app/components/fruityAppBar.dart';
 import '../domain/entities/species.dart';
 
 class AllSpeciesPage extends StatefulWidget {
-  AllSpeciesPage({
-    Key? key,
-  }) : super(key: key);
+  bool pending;
+
+  AllSpeciesPage({Key? key, this.pending = false}) : super(key: key);
 
   final String title = "Espécies";
 
@@ -24,7 +24,9 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
   late SpeciesRepository repository;
 
   Future<void> update() async {
-    var speciesFromRemote = await repository.getAllSpecies();
+    var speciesFromRemote = widget.pending
+        ? await repository.getPendingSpecies()
+        : await repository.getAllSpecies();
     setState(() {
       species = speciesFromRemote;
     });
@@ -43,6 +45,28 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.green),
+                  child: Padding(
+                    padding: EdgeInsets.all(2),
+                    child: Text('Header'),
+                  )),
+              ListTile(
+                title: const Text('Espécies pendentes'),
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AllSpeciesPage(pending: true)));
+                },
+              )
+            ],
+          ),
+        ),
         appBar: FruityAppBar(widget.title),
         body: RefreshIndicator(
           onRefresh: update,
@@ -89,10 +113,8 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProposeSpeciesPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProposeSpeciesPage()));
           },
           tooltip: 'Propor nova espécie',
           child: const Icon(Icons.add),

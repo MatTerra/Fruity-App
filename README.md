@@ -1,4 +1,4 @@
-# fruity
+# Fruity
 
 A new Flutter project.
 

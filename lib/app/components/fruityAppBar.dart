@@ -17,7 +17,7 @@ class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title),
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: true,
       actions: <Widget>[ProfileButton()],
     );
   }
