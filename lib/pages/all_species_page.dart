@@ -63,6 +63,14 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
                       MaterialPageRoute(
                           builder: (context) => AllSpeciesPage(pending: true)));
                 },
+              ),ListTile(
+                title: const Text('Espécies'),
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AllSpeciesPage()));
+                },
               )
             ],
           ),
@@ -78,7 +86,7 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                SpeciesDetailPage(species: specie)));
+                                SpeciesDetailPage(species: specie, pending: widget.pending)));
                   },
                   leading: Container(
                     height: 50,

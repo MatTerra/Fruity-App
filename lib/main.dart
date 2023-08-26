@@ -42,9 +42,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       locale: const Locale("pt", "BR"),
-      initialRoute: FirebaseAuth.instance.currentUser == null ? '/' : '/home',
+      initialRoute: FirebaseAuth.instance.currentUser == null ? '/sign-in' : '/home',
       routes: {
-        '/': (context) {
+        '/sign-in': (context) {
           return SignInScreen(
             providers: providers,
             headerBuilder: (context, constraints, shrinkOffset) {
@@ -69,15 +69,13 @@ class MyApp extends StatelessWidget {
                   state.user!.sendEmailVerification();
                   Navigator.pushNamed(context, '/verify-email');
                 } else {
-                  Navigator.pushReplacementNamed(context, '/home');
+                  Navigator.pushNamedAndRemoveUntil(context, '/home', (r)=>false);
                 }
               }),
             ],
             styles: const {
               EmailFormStyle(signInButtonVariant: ButtonVariant.filled),
             },
-            // headerBuilder: headerImage('assets/images/flutterfire_logo.png'),
-            // sideBuilder: sideImage('assets/images/flutterfire_logo.png'),
             subtitleBuilder: (context, action) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -114,7 +112,7 @@ class MyApp extends StatelessWidget {
               }),
               AuthCancelledAction((context) {
                 FirebaseUIAuth.signOut(context: context);
-                Navigator.pushReplacementNamed(context, '/');
+                Navigator.pushReplacementNamed(context, '/sign-in');
               }),
             ],
           );
@@ -134,7 +132,7 @@ class MyApp extends StatelessWidget {
           return ProfileScreen(
             actions: [
               SignedOutAction((context) {
-                Navigator.pushReplacementNamed(context, '/');
+                Navigator.pushReplacementNamed(context, '/sign-in');
               }),
             ],
             // actionCodeSettings: actionCodeSettings,

@@ -5,6 +5,7 @@ import 'package:fruity/domain/entities/species.dart';
 
 class SpeciesDetailPage extends StatelessWidget {
   final Species species;
+  bool pending;
 
   String toMonthName(month) {
     const months = [
@@ -24,10 +25,17 @@ class SpeciesDetailPage extends StatelessWidget {
     return months[month - 1];
   }
 
-  const SpeciesDetailPage({Key? key, required this.species}) : super(key: key);
+  SpeciesDetailPage({Key? key, required this.species, this.pending = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    const fieldTitleStyle = TextStyle(fontSize: 15,
+        fontWeight: FontWeight.w300, color: Colors.grey);
+    const fieldContentStyle = TextStyle(fontSize: 20,
+        fontWeight: FontWeight.w300);
+    const fieldTitlePadding = EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0);
+    const fieldContentPadding = EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0);
+
     return Scaffold(
         body: Center(
       child: CustomScrollView(
@@ -84,33 +92,29 @@ class SpeciesDetailPage extends StatelessWidget {
                       fontSize: 30, fontWeight: FontWeight.bold)),
             ),
             const Padding(
-                padding: EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-                child: Text("Temporada",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.grey))),
+                padding: fieldTitlePadding,
+                child: Text("Temporada", style: fieldTitleStyle)),
             Padding(
                 padding:
-                    const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                    fieldContentPadding,
                 child: Text(
                   "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}",
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                  style: fieldContentStyle,
                 )),
             const Padding(
-                padding: EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-                child: Text("Sobre",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.grey))),
+                padding: fieldTitlePadding,
+                child: Text("Sobre", style: fieldTitleStyle)),
             Padding(
                 padding:
-                    const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                    fieldContentPadding,
                 child: Text(
                   species.description!,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                  style: fieldContentStyle,
                 )),
+                pending ? Row(children: [
+                  MaterialButton(onPressed: () => {}, child: Text("Aprovar"),),
+                  MaterialButton(onPressed: () => {}, child: Text("Negar"),)
+                ],) : Container()
           ]))
         ],
       ),
