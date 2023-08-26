@@ -24,25 +24,12 @@ class Species {
         creator = json['creator'],
         scientificName = formatName(json['scientific_name']),
         popularNames =
-        parseSet(json['popular_names'] as String).map(formatName).toList(),
+        List<String>.from(json['popular_names']).map(formatName).toList(),
         description = json['description'],
-        links = parseSet(json['links'] as String),
-        picturesUrl = parseSet(json['pictures_url'] as String),
+        links = List<String>.from(json['links']),
+        picturesUrl = List<String>.from(json['pictures_url']),
         seasonStartMonth = json['season_start_month'],
         seasonEndMonth = json['season_end_month'];
-
-  static List<String> parseSet(String set) {
-    set = set
-        .trim();
-    set = set
-        .replaceAll("{", "")
-        .replaceAll("}", "");
-    var list = set
-        .split(",");
-    return list
-        .map((e) => e.trim())
-        .toList();
-  }
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
