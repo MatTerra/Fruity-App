@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:fruity/domain/entities/species.dart';
 import 'package:fruity/infra/repository/species_http_repository.dart';
 
+import 'all_species_page.dart';
+
 class SpeciesDetailPage extends StatelessWidget {
   final Species species;
   bool pending;
@@ -26,16 +28,18 @@ class SpeciesDetailPage extends StatelessWidget {
     return months[month - 1];
   }
 
-  SpeciesDetailPage({Key? key, required this.species, this.pending = false}) : super(key: key);
+  SpeciesDetailPage({Key? key, required this.species, this.pending = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    const fieldTitleStyle = TextStyle(fontSize: 15,
-        fontWeight: FontWeight.w300, color: Colors.grey);
-    const fieldContentStyle = TextStyle(fontSize: 20,
-        fontWeight: FontWeight.w300);
+    const fieldTitleStyle = TextStyle(
+        fontSize: 15, fontWeight: FontWeight.w300, color: Colors.grey);
+    const fieldContentStyle =
+        TextStyle(fontSize: 20, fontWeight: FontWeight.w300);
     const fieldTitlePadding = EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0);
-    const fieldContentPadding = EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0);
+    const fieldContentPadding =
+        EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0);
 
     return Scaffold(
         body: Center(
@@ -96,8 +100,7 @@ class SpeciesDetailPage extends StatelessWidget {
                 padding: fieldTitlePadding,
                 child: Text("Temporada", style: fieldTitleStyle)),
             Padding(
-                padding:
-                    fieldContentPadding,
+                padding: fieldContentPadding,
                 child: Text(
                   "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}",
                   style: fieldContentStyle,
@@ -106,20 +109,47 @@ class SpeciesDetailPage extends StatelessWidget {
                 padding: fieldTitlePadding,
                 child: Text("Sobre", style: fieldTitleStyle)),
             Padding(
-                padding:
-                    fieldContentPadding,
+                padding: fieldContentPadding,
                 child: Text(
                   species.description!,
                   style: fieldContentStyle,
                 )),
-                pending ? Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,children: [
-                  MaterialButton(onPressed: () => {
-                    SpeciesHTTPRepository.create().then((repository) =>
-                        repository.approveSpecies(species).then((value) =>
-                        pending = !value)),
-                  }, child: Text("Aprovar"),),
-                  MaterialButton(onPressed: () => {}, child: Text("Negar"),)
-                ],) : Container()
+            pending
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      MaterialButton(
+                        onPressed: () => {
+                          SpeciesHTTPRepository.create().then((repository) =>
+                              repository.approveSpecies(species).then((value) =>
+                                  {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AllSpeciesPage(pending: false)))
+                                  })),
+                        },
+                        child: const Text("Aprovar"),
+                      ),
+                      MaterialButton(
+                        onPressed: () => {
+                          SpeciesHTTPRepository.create().then((repository) =>
+                              repository.denySpecies(species).then((value) =>
+                              {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            AllSpeciesPage(pending: true)))
+                              })),
+                        },
+                        child: const Text("Negar"),
+                      )
+                    ],
+                  )
+                : Container()
           ]))
         ],
       ),

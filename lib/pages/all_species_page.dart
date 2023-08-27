@@ -1,3 +1,4 @@
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fruity/domain/repository/species_repository.dart';
@@ -30,11 +31,10 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
     var speciesFromRemote = widget.pending
         ? await repository.getPendingSpecies()
         : await repository.getAllSpecies();
-    user?.getIdTokenResult()
-        .then((token) => setState(() {
-              species = speciesFromRemote;
-              role = token.claims?['role'];
-            }));
+    user?.getIdTokenResult().then((token) => setState(() {
+          species = speciesFromRemote;
+          role = token.claims?['role'];
+        }));
   }
 
   @override
@@ -58,17 +58,18 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
-                  decoration: BoxDecoration(color: Colors.green),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          child: Image(image: NetworkImage(user?.photoURL ?? '')),
-                        ),
-                        Text(user?.displayName ?? user?.email ?? '')
-                      ],
+                decoration: BoxDecoration(color: Colors.green),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: UserAvatar(
+                        auth: FirebaseAuth.instance,
+                      ),
                     ),
-                  )),
+                    Text(user?.displayName ?? user?.email ?? '')
+                  ],
+                ),
+              ),
               ListTile(
                 title: const Text('Espécies'),
                 onTap: () {
