@@ -24,13 +24,13 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
   List<Species> species = [];
   late SpeciesRepository repository;
   String role = '';
+  late User? user = FirebaseAuth.instance.currentUser;
 
   Future<void> update() async {
     var speciesFromRemote = widget.pending
         ? await repository.getPendingSpecies()
         : await repository.getAllSpecies();
-    FirebaseAuth.instance.currentUser
-        ?.getIdTokenResult()
+    user?.getIdTokenResult()
         .then((token) => setState(() {
               species = speciesFromRemote;
               role = token.claims?['role'];
@@ -57,11 +57,17 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              const DrawerHeader(
+              DrawerHeader(
                   decoration: BoxDecoration(color: Colors.green),
-                  child: Padding(
-                    padding: EdgeInsets.all(2),
-                    child: Text('Header'),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          child: Image(image: NetworkImage(user?.photoURL ?? '')),
+                        ),
+                        Text(user?.displayName ?? user?.email ?? '')
+                      ],
+                    ),
                   )),
               ListTile(
                 title: const Text('Espécies'),

@@ -52,4 +52,10 @@ class SpeciesHTTPRepository implements SpeciesRepository {
 
     return species;
   }
+
+  @override
+  Future<bool> approveSpecies(Species species) async {
+    await httpService.post("/v1/species/${species.id}/approve", "");
+    return true;
+  }
 }

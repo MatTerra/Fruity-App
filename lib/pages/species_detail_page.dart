@@ -2,6 +2,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fruity/domain/entities/species.dart';
+import 'package:fruity/infra/repository/species_http_repository.dart';
 
 class SpeciesDetailPage extends StatelessWidget {
   final Species species;
@@ -111,8 +112,12 @@ class SpeciesDetailPage extends StatelessWidget {
                   species.description!,
                   style: fieldContentStyle,
                 )),
-                pending ? Row(children: [
-                  MaterialButton(onPressed: () => {}, child: Text("Aprovar"),),
+                pending ? Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,children: [
+                  MaterialButton(onPressed: () => {
+                    SpeciesHTTPRepository.create().then((repository) =>
+                        repository.approveSpecies(species).then((value) =>
+                        pending = !value)),
+                  }, child: Text("Aprovar"),),
                   MaterialButton(onPressed: () => {}, child: Text("Negar"),)
                 ],) : Container()
           ]))
