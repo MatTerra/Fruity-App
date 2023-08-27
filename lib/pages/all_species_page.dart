@@ -4,6 +4,7 @@ import 'package:fruity/domain/repository/species_repository.dart';
 import 'package:fruity/infra/repository/species_http_repository.dart';
 import 'package:fruity/pages/propose_species.dart';
 import 'package:fruity/pages/species_detail_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../app/components/fruityAppBar.dart';
 import '../domain/entities/species.dart';
@@ -13,7 +14,7 @@ class AllSpeciesPage extends StatefulWidget {
 
   AllSpeciesPage({Key? key, this.pending = false}) : super(key: key);
 
-  final String title = "Espécies";
+  String title = "Espécies";
 
   @override
   _AllSpeciesPageState createState() => _AllSpeciesPageState();
@@ -22,19 +23,26 @@ class AllSpeciesPage extends StatefulWidget {
 class _AllSpeciesPageState extends State<AllSpeciesPage> {
   List<Species> species = [];
   late SpeciesRepository repository;
+  String role = '';
 
   Future<void> update() async {
     var speciesFromRemote = widget.pending
         ? await repository.getPendingSpecies()
         : await repository.getAllSpecies();
-    setState(() {
-      species = speciesFromRemote;
-    });
+    FirebaseAuth.instance.currentUser
+        ?.getIdTokenResult()
+        .then((token) => setState(() {
+              species = speciesFromRemote;
+              role = token.claims?['role'];
+            }));
   }
 
   @override
   void initState() {
     super.initState();
+    if (widget.pending) {
+      widget.title += " Pendentes";
+    }
 
     SpeciesHTTPRepository.create().then((repository) {
       this.repository = repository;
@@ -56,22 +64,28 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
                     child: Text('Header'),
                   )),
               ListTile(
-                title: const Text('Espécies pendentes'),
-                onTap: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AllSpeciesPage(pending: true)));
-                },
-              ),ListTile(
                 title: const Text('Espécies'),
                 onTap: () {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => AllSpeciesPage()));
+                          builder: (context) =>
+                              AllSpeciesPage(pending: false)));
                 },
-              )
+              ),
+              role == 'admin'
+                  ? ListTile(
+                      title: const Text('Espécies pendentes'),
+                      onTap: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AllSpeciesPage(
+                                      pending: true,
+                                    )));
+                      },
+                    )
+                  : Container()
             ],
           ),
         ),
@@ -85,8 +99,8 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                SpeciesDetailPage(species: specie, pending: widget.pending)));
+                            builder: (context) => SpeciesDetailPage(
+                                species: specie, pending: widget.pending)));
                   },
                   leading: Container(
                     height: 50,
