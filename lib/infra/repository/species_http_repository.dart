@@ -47,6 +47,14 @@ class SpeciesHTTPRepository implements SpeciesRepository {
   }
 
   @override
+  Future<List<Species>> getUserProposalsSpecies() async {
+    List<dynamic> speciesList =
+    (await httpService.get("/v1/species/my-species") as List)[1] as List;
+
+    return speciesList.map((s) => Species.fromJson(s)).toList();
+  }
+
+  @override
   Future<Species> createSpecies(Species species) async {
     species.id = await httpService.post("/v1/species", jsonEncode(species));
 
@@ -64,4 +72,6 @@ class SpeciesHTTPRepository implements SpeciesRepository {
     await httpService.post("/v1/species/${species.id}/deny", "");
     return true;
   }
+
+
 }

@@ -12,8 +12,10 @@ import '../domain/entities/species.dart';
 
 class AllSpeciesPage extends StatefulWidget {
   bool pending;
+  bool mine;
 
-  AllSpeciesPage({Key? key, this.pending = false}) : super(key: key);
+  AllSpeciesPage({Key? key, this.pending = false, this.mine = false})
+      : super(key: key);
 
   String title = "Espécies";
 
@@ -31,9 +33,11 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
     setState(() {
       species = [];
     });
-    var speciesFromRemote = widget.pending
-        ? await repository.getPendingSpecies()
-        : await repository.getAllSpecies();
+    var speciesFromRemote = widget.mine
+        ? await repository.getUserProposalsSpecies()
+        : widget.pending
+            ? await repository.getPendingSpecies()
+            : await repository.getAllSpecies();
     user?.getIdTokenResult().then((token) => setState(() {
           species = speciesFromRemote;
           role = token.claims?['role'];
@@ -43,6 +47,10 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.mine) {
+      widget.pending = false;
+      widget.title = "Minhas Espécies";
+    }
     if (widget.pending) {
       widget.title += " Pendentes";
     }

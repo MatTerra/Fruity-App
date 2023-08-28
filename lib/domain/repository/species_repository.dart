@@ -4,6 +4,7 @@ abstract class SpeciesRepository {
   Future<Species?> getSpecies(String id);
   Future<List<Species>> getAllSpecies();
   Future<List<Species>> getPendingSpecies();
+  Future<List<Species>> getUserProposalsSpecies();
   Future<Species> createSpecies(Species species);
   Future<bool> approveSpecies(Species species);
   Future<bool> denySpecies(Species species);

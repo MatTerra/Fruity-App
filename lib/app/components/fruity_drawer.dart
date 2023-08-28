@@ -40,22 +40,33 @@ class FruityDrawer extends StatelessWidget {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          AllSpeciesPage(pending: false)));
+                      builder: (context) => AllSpeciesPage(pending: false)));
             },
           ),
-          role == 'admin'
-              ? ListTile(
-            title: const Text('Espécies pendentes'),
+          ListTile(
+            title: const Text('Minhas espécies'),
             onTap: () {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => AllSpeciesPage(
-                        pending: true,
-                      )));
+                            pending: false,
+                            mine: true,
+                          )));
             },
-          )
+          ),
+          role == 'admin'
+              ? ListTile(
+                  title: const Text('Espécies pendentes'),
+                  onTap: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AllSpeciesPage(
+                                  pending: true,
+                                )));
+                  },
+                )
               : Container()
         ],
       ),
