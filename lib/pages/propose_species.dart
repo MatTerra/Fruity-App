@@ -121,10 +121,16 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
   void submit() {
     _formKey.currentState!.saveAndValidate();
     var formValues = _formKey.currentState!.value;
+    List<String> popularNamesValues = [];
+    formValues.forEach((key, value) {
+      if (key.startsWith("popularName_")) {
+        popularNamesValues.add(value);
+      }
+    });
     var species = Species(
         creator: FirebaseAuth.instance.currentUser!.uid,
         scientificName: formValues['scientificName'],
-        popularNames: formValues['popularNames'] ?? [],
+        popularNames: popularNamesValues,
         description: formValues['description'] ?? '',
         links: [],
         picturesUrl: [],
