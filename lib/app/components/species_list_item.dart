@@ -1,12 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fruity/app/components/fruity_drawer.dart';
-import 'package:fruity/domain/repository/species_repository.dart';
-import 'package:fruity/infra/repository/species_http_repository.dart';
-import 'package:fruity/pages/propose_species.dart';
-import 'package:fruity/pages/speciesDetailPage.dart';
+import 'package:fruity/pages/species_detail_page.dart';
 
 import 'fruity_app_bar.dart';
 import '../../domain/entities/species.dart';

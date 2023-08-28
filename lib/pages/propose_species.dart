@@ -6,7 +6,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fruity/app/components/fruity_app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fruity/pages/speciesDetailPage.dart';
+import 'package:fruity/pages/species_detail_page.dart';
 
 import '../domain/entities/species.dart';
 import '../domain/repository/species_repository.dart';
@@ -62,6 +62,20 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
 
   @override
   Widget build(BuildContext context) {
+    var months = [
+      'Jan',
+      'Fev',
+      'Mar',
+      'Abr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Set',
+      'Out',
+      'Nov',
+      'Dez'
+    ];
     return Scaffold(
         appBar: const FruityAppBar('Propor nova espécie'),
         body: SingleChildScrollView(
@@ -78,6 +92,38 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
                           decoration: const InputDecoration(
                             label: Text('Nome científico'),
                           ),
+                        ),
+                        const SizedBox(height: 30),
+                        const Row(
+                          children: [
+                            Text("Temporada:", style: TextStyle(fontSize: 15.0))
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: Padding(
+                                    padding: EdgeInsets.only(right: 8),
+                                    child: FormBuilderDropdown(
+                                        name: "begin",
+                                        validator:
+                                            FormBuilderValidators.required(),
+                                        decoration: const InputDecoration(
+                                          label: Text('Início'),
+                                        ),
+                                        items: monthsDropdownItems(months)))),
+                            Expanded(
+                                child: Padding(
+                                    padding: EdgeInsets.only(left: 8),
+                                    child: FormBuilderDropdown(
+                                        name: "end",
+                                        validator:
+                                            FormBuilderValidators.required(),
+                                        decoration: const InputDecoration(
+                                          label: Text('Fim'),
+                                        ),
+                                        items: monthsDropdownItems(months)))),
+                          ],
                         ),
                         const SizedBox(height: 30),
                         const Row(
@@ -118,6 +164,14 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
                     )))));
   }
 
+  List<DropdownMenuItem<int>> monthsDropdownItems(List<String> months) {
+    return months
+        .asMap()
+        .entries
+        .map((m) => DropdownMenuItem(value: m.key, child: Text(m.value)))
+        .toList();
+  }
+
   void submit() {
     _formKey.currentState!.saveAndValidate();
     var formValues = _formKey.currentState!.value;
@@ -134,8 +188,8 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
         description: formValues['description'] ?? '',
         links: [],
         picturesUrl: [],
-        seasonStartMonth: 1,
-        seasonEndMonth: 2);
+        seasonStartMonth: formValues['begin'],
+        seasonEndMonth: formValues['end']);
     if (_formKey.currentState!.isValid) {
       repository.createSpecies(species).then(goToNewSpeciesDetails);
     }
@@ -150,7 +204,7 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
         context,
         MaterialPageRoute(
             builder: (context) => SpeciesDetailPage(species: value)),
-    ModalRoute.withName("/home"));
+        ModalRoute.withName("/home"));
   }
 }
 
