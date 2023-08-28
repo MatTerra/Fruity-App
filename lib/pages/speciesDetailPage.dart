@@ -1,14 +1,13 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fruity/domain/entities/species.dart';
 import 'package:fruity/infra/repository/species_http_repository.dart';
+import 'package:fruity/app/components/field_with_title.dart';
 
 import 'all_species_page.dart';
 
 class SpeciesDetailPage extends StatelessWidget {
   final Species species;
-  bool pending;
 
   String toMonthName(month) {
     const months = [
@@ -28,22 +27,15 @@ class SpeciesDetailPage extends StatelessWidget {
     return months[month - 1];
   }
 
-  SpeciesDetailPage({Key? key, required this.species, this.pending = false})
-      : super(key: key);
+  const SpeciesDetailPage({Key? key, required this.species}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    const fieldTitleStyle = TextStyle(
-        fontSize: 15, fontWeight: FontWeight.w300, color: Colors.grey);
-    const fieldContentStyle =
-        TextStyle(fontSize: 20, fontWeight: FontWeight.w300);
-    const fieldTitlePadding = EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0);
-    const fieldContentPadding =
-        EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0);
-
+    const title = "Temporada";
+    var content =
+        "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}";
     return Scaffold(
-        body: Center(
-      child: CustomScrollView(
+      body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
             pinned: true,
@@ -75,7 +67,7 @@ class SpeciesDetailPage extends StatelessWidget {
                           final image = species.picturesUrl![index];
                           return Image.network(
                             image,
-                            fit: BoxFit.fill,
+                            fit: BoxFit.fitWidth,
                           );
                         },
                         indicatorLayout: PageIndicatorLayout.COLOR,
@@ -84,38 +76,37 @@ class SpeciesDetailPage extends StatelessWidget {
                         pagination: const SwiperPagination(),
                         control: const SwiperControl(),
                       )
-                    : Image.asset('assets/tree-silhouette.png'),
+                    : Image.asset('assets/tree-silhouette.png',
+                        fit: BoxFit.fitWidth),
               ),
             ),
           ),
           SliverList(
               delegate: SliverChildListDelegate([
+            species.approved ?? true
+                ? Container()
+                : const SizedBox(
+                    height: 20,
+                    child: Material(
+                      color: Colors.red,
+                      child: Center(
+                          child: Text(
+                        "Aguardando aprovação!",
+                        style: TextStyle(fontSize: 15, color: Colors.white),
+                      )),
+                    )),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(species.popularNames!.join(", "),
                   style: const TextStyle(
                       fontSize: 30, fontWeight: FontWeight.bold)),
             ),
-            const Padding(
-                padding: fieldTitlePadding,
-                child: Text("Temporada", style: fieldTitleStyle)),
-            Padding(
-                padding: fieldContentPadding,
-                child: Text(
-                  "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}",
-                  style: fieldContentStyle,
-                )),
-            const Padding(
-                padding: fieldTitlePadding,
-                child: Text("Sobre", style: fieldTitleStyle)),
-            Padding(
-                padding: fieldContentPadding,
-                child: Text(
-                  species.description!,
-                  style: fieldContentStyle,
-                )),
-            pending
-                ? Row(
+
+            FieldWithTitle(title: title, content: content),
+            FieldWithTitle(title: "Sobre", content: species.description ?? ""),
+            species.approved ?? true
+                ? Container()
+                : Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -136,23 +127,21 @@ class SpeciesDetailPage extends StatelessWidget {
                       MaterialButton(
                         onPressed: () => {
                           SpeciesHTTPRepository.create().then((repository) =>
-                              repository.denySpecies(species).then((value) =>
-                              {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            AllSpeciesPage(pending: true)))
-                              })),
+                              repository.denySpecies(species).then((value) => {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                AllSpeciesPage(pending: true)))
+                                  })),
                         },
                         child: const Text("Negar"),
                       )
                     ],
                   )
-                : Container()
           ]))
         ],
       ),
-    ));
+    );
   }
 }

@@ -8,6 +8,7 @@ class Species {
   List<String>? picturesUrl;
   int? seasonStartMonth;
   int? seasonEndMonth;
+  bool? approved;
 
   Species({this.id,
     required this.creator,
@@ -17,7 +18,8 @@ class Species {
     this.links,
     this.picturesUrl,
     this.seasonStartMonth,
-    this.seasonEndMonth});
+    this.seasonEndMonth,
+    this.approved});
 
   Species.fromJson(Map<String, dynamic> json)
       : id = json['id_'],
@@ -29,7 +31,8 @@ class Species {
         links = List<String>.from(json['links']),
         picturesUrl = List<String>.from(json['pictures_url']),
         seasonStartMonth = json['season_start_month'],
-        seasonEndMonth = json['season_end_month'];
+        seasonEndMonth = json['season_end_month'],
+        approved = json['approved'];
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:fruity/app/components/fruityAppBar.dart';
+import 'package:fruity/app/components/fruity_app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fruity/pages/species_detail_page.dart';
+import 'package:fruity/pages/speciesDetailPage.dart';
 
 import '../domain/entities/species.dart';
 import '../domain/repository/species_repository.dart';

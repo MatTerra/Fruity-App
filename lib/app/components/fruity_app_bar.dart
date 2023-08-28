@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fruity/app/components/profileButton.dart';
+import 'package:fruity/app/components/profile_button.dart';
 
 class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -18,7 +18,6 @@ class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       automaticallyImplyLeading: true,
-      actions: <Widget>[ProfileButton()],
     );
   }
 }
