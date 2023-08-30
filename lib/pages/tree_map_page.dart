@@ -77,7 +77,7 @@ class _TreeMapPageState extends State<TreeMapPage> {
     var token = await user?.getIdTokenResult();
     var position = await futurePosition;
     setState(() {
-      role = token.claims?['role'];
+      role = token?.claims?['role'];
       _currentPosition = position;
     });
   }

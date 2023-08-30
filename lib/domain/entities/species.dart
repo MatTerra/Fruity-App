@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Species {
   String? id;
   String creator;
@@ -9,6 +11,7 @@ class Species {
   int? seasonStartMonth;
   int? seasonEndMonth;
   bool? approved;
+  static Utf8Decoder utf8Decoder = const Utf8Decoder();
 
   Species({this.id,
     required this.creator,
@@ -27,7 +30,7 @@ class Species {
         scientificName = formatName(json['scientific_name']),
         popularNames =
         List<String>.from(json['popular_names']).map(formatName).toList(),
-        description = json['description'],
+        description = utf8Decoder.convert(json['description'].codeUnits),
         links = List<String>.from(json['links']),
         picturesUrl = List<String>.from(json['pictures_url']),
         seasonStartMonth = json['season_start_month'],
@@ -57,5 +60,5 @@ class Species {
   }
 
   static String formatName(String name) =>
-      name.isNotEmpty ? "${name[0].toUpperCase()}${name.substring(1)}" : "";
+      name.isNotEmpty ? utf8Decoder.convert("${name[0].toUpperCase()}${name.substring(1)}".codeUnits) : "";
 }
