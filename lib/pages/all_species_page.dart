@@ -7,8 +7,8 @@ import 'package:fruity/domain/repository/species_repository.dart';
 import 'package:fruity/infra/repository/species_http_repository.dart';
 import 'package:fruity/app/components/propose_species_button.dart';
 
-import '../app/components/fruity_app_bar.dart';
-import '../domain/entities/species.dart';
+import 'package:fruity/app/components/fruity_app_bar.dart';
+import 'package:fruity/domain/entities/species.dart';
 
 class AllSpeciesPage extends StatefulWidget {
   bool pending;

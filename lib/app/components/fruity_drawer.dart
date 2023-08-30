@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:fruity/pages/all_species_page.dart';
+import 'package:fruity/pages/tree_map_page.dart';
 
 class FruityDrawer extends StatelessWidget {
   const FruityDrawer({
@@ -67,7 +68,16 @@ class FruityDrawer extends StatelessWidget {
                                 )));
                   },
                 )
-              : Container()
+              : Container(),
+          ListTile(
+            title: const Text('Mapa de Árvores'),
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TreeMapPage()));
+            },
+          )
         ],
       ),
     );
