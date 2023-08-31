@@ -37,7 +37,7 @@ class Tree {
   Map<String, dynamic> toJson(){
     Map<String, dynamic> json = {
       'creator': creator,
-      'species': species.toJson(),
+      'species': species.id,
       'location': [location.longitude, location.latitude],
       'description': description ?? '',
       'producing': producing ?? false,

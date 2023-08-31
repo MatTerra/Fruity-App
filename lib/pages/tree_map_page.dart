@@ -95,6 +95,7 @@ class _TreeMapPageState extends State<TreeMapPage> {
       appBar: FruityAppBar("Árvores"),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
+        myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
             target: LatLng(_currentPosition?.latitude ?? -15.79082045623587,
                 _currentPosition?.longitude ?? -47.86114020307252),
