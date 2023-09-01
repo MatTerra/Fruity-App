@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fruity/pages/species_detail_page.dart';
-
-import 'fruity_app_bar.dart';
-import '../../domain/entities/species.dart';
+import 'package:fruity/domain/entities/species.dart';
 
 class SpeciesListItem extends StatelessWidget {
   final Species species;

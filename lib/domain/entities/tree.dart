@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Tree {
   String? id;
-  String creator;
+  String? creator;
   Species species;
   String? variety;
   LatLng location;
@@ -16,7 +16,7 @@ class Tree {
 
   Tree(
       {this.id,
-      required this.creator,
+      this.creator,
       required this.species,
       this.variety,
       required this.location,
@@ -36,7 +36,6 @@ class Tree {
 
   Map<String, dynamic> toJson(){
     Map<String, dynamic> json = {
-      'creator': creator,
       'species': species.id,
       'location': [location.longitude, location.latitude],
       'description': description ?? '',

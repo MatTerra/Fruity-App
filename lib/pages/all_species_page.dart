@@ -24,7 +24,7 @@ class AllSpeciesPage extends StatefulWidget {
 }
 
 class _AllSpeciesPageState extends State<AllSpeciesPage> {
-  List<Species> species = [];
+  List<Species>? species;
   late SpeciesRepository repository;
   String role = '';
   late User? user = FirebaseAuth.instance.currentUser;
@@ -33,11 +33,17 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
     setState(() {
       species = [];
     });
-    var speciesFromRemote = widget.mine
-        ? await repository.getUserProposalsSpecies()
-        : widget.pending
-            ? await repository.getPendingSpecies()
-            : await repository.getAllSpecies();
+    var speciesFromRemote;
+    try {
+      speciesFromRemote = widget.mine
+          ? await repository.getUserProposalsSpecies()
+          : widget.pending
+              ? await repository.getPendingSpecies()
+              : await repository.getAllSpecies();
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Ocorreu um erro ao listar as espécies.")));
+    }
     user?.getIdTokenResult().then((token) => setState(() {
           species = speciesFromRemote;
           role = token.claims?['role'];
@@ -67,16 +73,31 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
         drawer: FruityDrawer(user: user, role: role),
         appBar: FruityAppBar(widget.title),
         body: RefreshIndicator(
-          onRefresh: update,
-          child: ListView(
-              children: species.isNotEmpty
-                  ? <Widget>[
-                      ...species.map(
-                        (specie) => SpeciesListItem(species: specie),
-                      ),
-                    ]
-                  : List.filled(10, const SpeciesListItemLoader())),
-        ),
+            onRefresh: update,
+            child: ListView(
+              children: species != null
+                  ? species!.isNotEmpty
+                      ? <Widget>[
+                          ...species!.map(
+                            (specie) => SpeciesListItem(species: specie),
+                          ),
+                        ]
+                      : List.filled(10, const SpeciesListItemLoader())
+                  : <Widget>[
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Text(
+                                "Não foi possível listar as espécies.",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ))
+                        ],
+                      )
+                    ],
+            )),
         floatingActionButton: ProposeSpeciesButton());
   }
 }

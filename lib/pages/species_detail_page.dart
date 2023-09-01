@@ -1,5 +1,6 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
+import 'package:fruity/app/components/create_tree_button.dart';
 import 'package:fruity/domain/entities/species.dart';
 import 'package:fruity/infra/repository/species_http_repository.dart';
 import 'package:fruity/app/components/field_with_title.dart';
@@ -35,6 +36,9 @@ class SpeciesDetailPage extends StatelessWidget {
     var content =
         "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}";
     return Scaffold(
+      floatingActionButton: CreateTreeButton(
+        species: species,
+      ),
       body: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
@@ -101,7 +105,6 @@ class SpeciesDetailPage extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 30, fontWeight: FontWeight.bold)),
             ),
-
             FieldWithTitle(title: title, content: content),
             FieldWithTitle(title: "Sobre", content: species.description ?? ""),
             species.approved ?? true
