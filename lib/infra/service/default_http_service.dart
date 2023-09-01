@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:fruity/infra/service/http_service.dart';
 import 'package:http/http.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class DefaultHTTPService implements HTTPService{
-  Client httpClient = Client();
+  Client httpClient = SentryHttpClient();
   String url;
   Map<String,String> defaultHeaders;
   DefaultHTTPService(this.url, {this.defaultHeaders = const {}}) : super();

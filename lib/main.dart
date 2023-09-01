@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fruity/pages/all_species_page.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'firebase_options.dart';
 
@@ -19,13 +20,20 @@ Future<void> main() async {
 
   if (!kIsWeb) {
     ByteData data =
-        await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+    await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
     SecurityContext.defaultContext
         .setTrustedCertificatesBytes(data.buffer.asUint8List());
   }
   // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-
-  runApp(const MyApp());
+  await SentryFlutter.init(
+          (options) {
+        options.dsn =
+        'https://7f2bdb197e8796c1a501e91e217df4b1@o4505806941454336.ingest.sentry.io/4505806942830592';
+        options.tracesSampleRate = 0.5;
+      },
+      appRunner: () =>
+          runApp(const MyApp());
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -42,7 +50,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       locale: const Locale("pt", "BR"),
-      initialRoute: FirebaseAuth.instance.currentUser == null ? '/sign-in' : '/home',
+      initialRoute: FirebaseAuth.instance.currentUser == null
+          ? '/sign-in'
+          : '/home',
       routes: {
         '/sign-in': (context) {
           return SignInScreen(
@@ -69,7 +79,8 @@ class MyApp extends StatelessWidget {
                   state.user!.sendEmailVerification();
                   Navigator.pushNamed(context, '/verify-email');
                 } else {
-                  Navigator.pushNamedAndRemoveUntil(context, '/home', (r)=>false);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/home', (r) => false);
                 }
               }),
             ],
@@ -118,8 +129,11 @@ class MyApp extends StatelessWidget {
           );
         },
         '/forgot-password': (context) {
-          final arguments = ModalRoute.of(context)?.settings.arguments
-              as Map<String, dynamic>?;
+          final arguments = ModalRoute
+              .of(context)
+              ?.settings
+              .arguments
+          as Map<String, dynamic>?;
 
           return ForgotPasswordScreen(
             email: arguments?['email'],
