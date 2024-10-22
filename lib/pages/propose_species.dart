@@ -22,6 +22,7 @@ class ProposeSpeciesPage extends StatefulWidget {
 class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
   final _formKey = GlobalKey<FormBuilderState>();
   late SpeciesRepository repository;
+  bool loading = false;
 
   static List<String> popularNames = [];
 
@@ -149,14 +150,26 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
                         Row(
                           children: <Widget>[
                             Expanded(
-                              child: MaterialButton(
-                                color: Theme.of(context).colorScheme.secondary,
-                                onPressed: submit,
-                                child: const Text(
-                                  "Enviar",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
+                              child: !loading
+                                  ? MaterialButton(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      onPressed: submit,
+                                      child: const Text(
+                                        "Enviar",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    )
+                                  : MaterialButton(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      onPressed: () {},
+                                      child: const CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 3,
+                                      )),
                             ),
                           ],
                         ),
@@ -168,11 +181,14 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
     return months
         .asMap()
         .entries
-        .map((m) => DropdownMenuItem(value: m.key, child: Text(m.value)))
+        .map((m) => DropdownMenuItem(value: m.key + 1, child: Text(m.value)))
         .toList();
   }
 
   void submit() {
+    setState(() {
+      loading = true;
+    });
     _formKey.currentState!.saveAndValidate();
     var formValues = _formKey.currentState!.value;
     List<String> popularNamesValues = [];
@@ -191,7 +207,16 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
         seasonStartMonth: formValues['begin'],
         seasonEndMonth: formValues['end']);
     if (_formKey.currentState!.isValid) {
-      repository.createSpecies(species).then(goToNewSpeciesDetails);
+      repository
+          .createSpecies(species)
+          .then(goToNewSpeciesDetails)
+          .catchError((err) {
+        setState(() {
+          loading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Ocorreu um erro ao criar a espécies.")));
+      });
     }
   }
 
@@ -199,6 +224,8 @@ class _ProposeSpeciesPageState extends State<ProposeSpeciesPage> {
     _formKey.currentState?.reset();
     setState(() {
       savedValue = '';
+      popularNames = [""];
+      loading = false;
     });
     Navigator.pushAndRemoveUntil(
         context,

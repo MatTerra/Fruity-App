@@ -5,18 +5,18 @@ import 'package:fruity/domain/use_cases/get_species.dart';
 import '../../infra/repository/species_in_memory_repository.dart';
 
 void main() {
-  test('Should call the repository', () {
+  test('Should call the repository', () async {
     final input = GetSpeciesInput('some_id');
     var repository = SpeciesInMemoryRepository();
     final useCase = GetSpecies(repository);
 
-    final output = useCase.execute(input);
+    final output = await useCase.execute(input);
     expect(repository.calls.length, 1);
     expect(repository.calls[0], "getSpecies(some_id)");
     expect(output.species, null);
   });
 
-  test('Should return species if found in repository', () {
+  test('Should return species if found in repository', () async {
     final input = GetSpeciesInput('some_id');
     var repository = SpeciesInMemoryRepository();
     var testSpecies = Species(
@@ -27,7 +27,7 @@ void main() {
 
     final useCase = GetSpecies(repository);
 
-    final output = useCase.execute(input);
+    final output = await useCase.execute(input);
     expect(repository.calls.length, 1);
     expect(repository.calls[0], "getSpecies(some_id)");
     expect(output.species, testSpecies);

@@ -1,23 +1,16 @@
-import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fruity/app/components/fruity_app_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fruity/app/components/location_handler.dart';
+import 'package:fruity/domain/entities/species.dart';
 import 'package:fruity/domain/entities/tree.dart';
 import 'package:fruity/domain/repository/tree_repository.dart';
 import 'package:fruity/infra/repository/tree_http_repository.dart';
-import 'package:fruity/pages/species_detail_page.dart';
 import 'package:fruity/pages/tree_map_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-import '../domain/entities/species.dart';
-import '../domain/repository/species_repository.dart';
-import '../infra/repository/species_http_repository.dart';
 
 class CreateTreePage extends StatefulWidget {
   Species species;
@@ -35,6 +28,7 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
   late TreeRepository repository;
   late GoogleMapController mapController;
   late LatLng location;
+  bool loading = false;
 
   String savedValue = '';
 
@@ -43,11 +37,8 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
     var repositoryFuture = TreeHTTPRepository.create();
     repository = (await repositoryFuture) as TreeRepository;
 
-    final hasPermission = await handleLocationPermission();
-
-    if (!hasPermission) return;
-    var position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    Position? position = await getCurrentPosition();
+    if (position == null) return;
     var marker = Marker(
         markerId: const MarkerId("newTree"),
         position: LatLng(position.latitude, position.longitude),
@@ -60,11 +51,10 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
         infoWindow: const InfoWindow(title: "Nova árvore"));
     setState(() {
       _currentPosition = position;
-      location=LatLng(position.latitude, position.longitude);
+      location = LatLng(position.latitude, position.longitude);
       treeMarker.add(marker);
     });
   }
-
 
   @override
   void initState() {
@@ -73,6 +63,10 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
     TreeHTTPRepository.create().then((repository) {
       this.repository = repository;
     });
+
+    getCurrentPosition().then((value) => setState(() {
+          _currentPosition = value;
+        }));
 
     super.initState();
   }
@@ -94,6 +88,10 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
                         _currentPosition?.longitude ?? -47.86114020307252),
                     zoom: 20.0),
                 markers: treeMarker)),
+        const Text(
+          "Para arrastar o marcador, clique e segure.",
+          style: TextStyle(fontSize: 10),
+        ),
         const SizedBox(height: 30),
         Text("Nova árvore de ${widget.species.popularNames?[0]}",
             style:
@@ -123,10 +121,15 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
                       child: MaterialButton(
                         color: Theme.of(context).colorScheme.secondary,
                         onPressed: submit,
-                        child: const Text(
-                          "Enviar",
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: !loading
+                            ? const Text(
+                                "Enviar",
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              ),
                       ),
                     ),
                   ],
@@ -138,6 +141,9 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
   }
 
   void submit() {
+    setState(() {
+      loading = true;
+    });
     _formKey.currentState!.saveAndValidate();
     var formValues = _formKey.currentState!.value;
     var tree = Tree(
@@ -147,7 +153,13 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
       producing: formValues['producing'],
     );
     if (_formKey.currentState!.isValid) {
-      repository.createTree(tree).then(goToNewTreeDetails);
+      repository.createTree(tree).then(goToNewTreeDetails).catchError((err) {
+        setState(() {
+          loading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Ocorreu um erro ao criar a árvore.")));
+      });
     }
   }
 
@@ -155,11 +167,11 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
     _formKey.currentState?.reset();
     setState(() {
       savedValue = '';
+      loading = false;
     });
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (context) => const TreeMapPage()),
+        MaterialPageRoute(builder: (context) => const TreeMapPage()),
         ModalRoute.withName("/home"));
   }
 }

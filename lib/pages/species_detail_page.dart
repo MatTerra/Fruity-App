@@ -9,6 +9,7 @@ import 'all_species_page.dart';
 
 class SpeciesDetailPage extends StatelessWidget {
   final Species species;
+  final ValueNotifier<bool> loading = ValueNotifier(false);
 
   String toMonthName(month) {
     const months = [
@@ -28,45 +29,51 @@ class SpeciesDetailPage extends StatelessWidget {
     return months[month - 1];
   }
 
-  const SpeciesDetailPage({Key? key, required this.species}) : super(key: key);
+  SpeciesDetailPage({Key? key, required this.species}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     const title = "Temporada";
     var content =
-        "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}";
-    return Scaffold(
-      floatingActionButton: CreateTreeButton(
-        species: species,
-      ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            pinned: true,
-            title: Text(
-              species.scientificName,
-              style: const TextStyle(fontStyle: FontStyle.italic),
+        "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(
+        species.seasonEndMonth!)}";
+    return ValueListenableBuilder(
+        valueListenable: loading,
+        builder: (context, isLoading, child) {
+          return Scaffold(
+            floatingActionButton: CreateTreeButton(
+              species: species,
             ),
-            expandedHeight: 350.0,
-            backgroundColor: Theme.of(context).primaryColor,
-            flexibleSpace: FlexibleSpaceBar(
-              background: ShaderMask(
-                shaderCallback: (bound) {
-                  return LinearGradient(
-                      begin: FractionalOffset.topCenter,
-                      end: FractionalOffset.bottomCenter,
-                      colors: [
-                        Colors.black54.withOpacity(0.80),
-                        Colors.transparent
-                      ],
-                      stops: const [
-                        0.0,
-                        0.22
-                      ]).createShader(bound);
-                },
-                blendMode: BlendMode.srcOver,
-                child: species.picturesUrl!.isNotEmpty
-                    ? Swiper(
+            body: CustomScrollView(
+              slivers: <Widget>[
+                SliverAppBar(
+                  pinned: true,
+                  title: Text(
+                    species.scientificName,
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                  expandedHeight: 350.0,
+                  backgroundColor: Theme
+                      .of(context)
+                      .primaryColor,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: ShaderMask(
+                      shaderCallback: (bound) {
+                        return LinearGradient(
+                            begin: FractionalOffset.topCenter,
+                            end: FractionalOffset.bottomCenter,
+                            colors: [
+                              Colors.black54.withOpacity(0.80),
+                              Colors.transparent
+                            ],
+                            stops: const [
+                              0.0,
+                              0.22
+                            ]).createShader(bound);
+                      },
+                      blendMode: BlendMode.srcOver,
+                      child: species.picturesUrl!.isNotEmpty
+                          ? Swiper(
                         itemBuilder: (context, index) {
                           final image = species.picturesUrl![index];
                           return Image.network(
@@ -80,71 +87,90 @@ class SpeciesDetailPage extends StatelessWidget {
                         pagination: const SwiperPagination(),
                         control: const SwiperControl(),
                       )
-                    : Image.asset('assets/tree-silhouette.png',
-                        fit: BoxFit.fitWidth),
-              ),
-            ),
-          ),
-          SliverList(
-              delegate: SliverChildListDelegate([
-            species.approved ?? true
-                ? Container()
-                : const SizedBox(
-                    height: 20,
-                    child: Material(
-                      color: Colors.red,
-                      child: Center(
-                          child: Text(
-                        "Aguardando aprovação!",
-                        style: TextStyle(fontSize: 15, color: Colors.white),
-                      )),
-                    )),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(species.popularNames!.join(", "),
-                  style: const TextStyle(
-                      fontSize: 30, fontWeight: FontWeight.bold)),
-            ),
-            FieldWithTitle(title: title, content: content),
-            FieldWithTitle(title: "Sobre", content: species.description ?? ""),
-            species.approved ?? true
-                ? Container()
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      MaterialButton(
-                        onPressed: () => {
-                          SpeciesHTTPRepository.create().then((repository) =>
-                              repository.approveSpecies(species).then((value) =>
-                                  {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AllSpeciesPage(pending: false)))
-                                  })),
-                        },
-                        child: const Text("Aprovar"),
+                          : Image.asset('assets/tree-silhouette.png',
+                          fit: BoxFit.fitWidth),
+                    ),
+                  ),
+                ),
+                SliverList(
+                    delegate: SliverChildListDelegate([
+                      species.approved ?? true
+                          ? Container()
+                          : const SizedBox(
+                          height: 20,
+                          child: Material(
+                            color: Colors.red,
+                            child: Center(
+                                child: Text(
+                                  "Aguardando aprovação!",
+                                  style: TextStyle(
+                                      fontSize: 15, color: Colors.white),
+                                )),
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(species.popularNames!.join(", "),
+                            style: const TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold)),
                       ),
-                      MaterialButton(
-                        onPressed: () => {
-                          SpeciesHTTPRepository.create().then((repository) =>
-                              repository.denySpecies(species).then((value) => {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AllSpeciesPage(pending: true)))
-                                  })),
-                        },
-                        child: const Text("Negar"),
+                      FieldWithTitle(title: title, content: content),
+                      FieldWithTitle(
+                          title: "Sobre", content: species.description ?? ""),
+                      species.approved ?? true
+                          ? Container()
+                          : Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          MaterialButton(
+                            onPressed: () {
+                              _approveSpecies(context, true);
+                            },
+                            child: isLoading as bool
+                                ? const CircularProgressIndicator(
+                              color: Colors.black,
+                              strokeWidth: 3,
+                            )
+                                : const Text("Aprovar"),
+                          ),
+                          MaterialButton(
+                            onPressed: () {
+                              _approveSpecies(context, false);
+                            },
+                            child: isLoading as bool
+                                ? const CircularProgressIndicator(
+                              color: Colors.black,
+                              strokeWidth: 3,
+                            )
+                                : const Text("Negar"),
+                          )
+                        ],
                       )
-                    ],
-                  )
-          ]))
-        ],
-      ),
-    );
+                    ]))
+              ],
+            ),
+          );
+        });
+  }
+
+  void _approveSpecies(BuildContext context, bool approve) async {
+    var repository = await SpeciesHTTPRepository.create();
+    var result;
+    if (approve) {
+      result = await repository.approveSpecies(species);
+    } else {
+      result = await repository.denySpecies(species);
+    }
+    if (result) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  AllSpeciesPage(pending: !approve)));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Não foi possível atualizar a espécie.')));
+    }
   }
 }

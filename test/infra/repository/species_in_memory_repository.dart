@@ -22,4 +22,28 @@ class SpeciesInMemoryRepository implements SpeciesRepository {
   Future<List<Species>> getAllSpecies() {
     return Future(() => species);
   }
+
+  @override
+  Future<bool> approveSpecies(Species species) {
+    // TODO: implement approveSpecies
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> denySpecies(Species species) {
+    // TODO: implement denySpecies
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Species>> getPendingSpecies() {
+    // TODO: implement getPendingSpecies
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Species>> getUserProposalsSpecies() {
+    // TODO: implement getUserProposalsSpecies
+    throw UnimplementedError();
+  }
 }

@@ -28,10 +28,12 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
   late SpeciesRepository repository;
   String role = '';
   late User? user = FirebaseAuth.instance.currentUser;
+  bool loading = true;
 
   Future<void> update() async {
     setState(() {
       species = [];
+      loading = true;
     });
     var speciesFromRemote;
     try {
@@ -44,10 +46,18 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Ocorreu um erro ao listar as espécies.")));
     }
-    user?.getIdTokenResult().then((token) => setState(() {
-          species = speciesFromRemote;
-          role = token.claims?['role'];
-        }));
+    user
+        ?.getIdTokenResult()
+        .then((token) => setState(() {
+              loading = false;
+              species = speciesFromRemote;
+              role = token.claims?['role'];
+            }))
+        .catchError((err) {
+      setState(() {
+        loading = false;
+      });
+    });
   }
 
   @override
@@ -75,28 +85,31 @@ class _AllSpeciesPageState extends State<AllSpeciesPage> {
         body: RefreshIndicator(
             onRefresh: update,
             child: ListView(
-              children: species != null
-                  ? species!.isNotEmpty
+              children: loading
+                  ? List.filled(10, const SpeciesListItemLoader())
+                  : species != null && species!.isNotEmpty
                       ? <Widget>[
                           ...species!.map(
                             (specie) => SpeciesListItem(species: specie),
                           ),
                         ]
-                      : List.filled(10, const SpeciesListItemLoader())
-                  : <Widget>[
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Text(
-                                "Não foi possível listar as espécies.",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ))
+                      : <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    species == null
+                                        ? "Não foi possível listar as espécies."
+                                        : "Não há espécies para listar.",
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ))
+                            ],
+                          )
                         ],
-                      )
-                    ],
             )),
         floatingActionButton: ProposeSpeciesButton());
   }

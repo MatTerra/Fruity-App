@@ -31,27 +31,30 @@ class _TreeMapPageState extends State<TreeMapPage> with LocationHandler {
     var updateFuture = _update();
     await updateFuture;
     var repository = await TreeHTTPRepository.create();
-    var trees = await repository.getTreesNear(LatLng(_currentPosition!.latitude, _currentPosition!.longitude));
-    setState(() {
-      _trees.clear();
-      for (final tree in trees) {
-        final marker = Marker(
-            markerId: MarkerId(tree.id!),
-            position: tree.location,
-            infoWindow: InfoWindow(
-                title: tree.species.id,
-                snippet: tree.producing! ? "Produzindo" : "Sem frutos"));
-        _trees[tree.id!] = marker;
-      }
-    });
+    try {
+      var trees = await repository.getTreesNear(
+          LatLng(_currentPosition!.latitude, _currentPosition!.longitude));
+      setState(() {
+        _trees.clear();
+        for (final tree in trees) {
+          final marker = Marker(
+              markerId: MarkerId(tree.id!),
+              position: tree.location,
+              infoWindow: InfoWindow(
+                  title: tree.species.popularNames?.join(','),
+                  snippet: tree.producing! ? "Produzindo" : "Sem frutos"));
+          _trees[tree.id!] = marker;
+        }
+      });
+    } catch (err){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Ocorreu um erro ao carregar as árvores, tente novamente.')));
+    }
   }
 
   Future<void> _update() async {
-    final hasPermission = await handleLocationPermission();
-
-    if (!hasPermission) return;
-    var futurePosition =
-        Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    var futurePosition = getCurrentPosition();
     var token = await user?.getIdTokenResult();
     var position = await futurePosition;
     setState(() {
@@ -62,6 +65,9 @@ class _TreeMapPageState extends State<TreeMapPage> with LocationHandler {
 
   @override
   void initState() {
+    getCurrentPosition().then((value) => setState(() {
+      _currentPosition = value;
+    }));
     super.initState();
   }
 
@@ -70,6 +76,7 @@ class _TreeMapPageState extends State<TreeMapPage> with LocationHandler {
     return Scaffold(
       drawer: FruityDrawer(user: user, role: role),
       appBar: FruityAppBar("Árvores"),
+      // floatingActionButton: ,
       body: GoogleMap(
         onMapCreated: _onMapCreated,
         myLocationEnabled: true,

@@ -32,7 +32,7 @@ Future<void> main() async {
         options.tracesSampleRate = 0.5;
       },
       appRunner: () =>
-          runApp(const MyApp());
+          runApp(const MyApp())
   );
 }
 

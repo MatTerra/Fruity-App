@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 mixin LocationHandler<T extends StatefulWidget> on State<T> {
+  Future<Position?> getCurrentPosition() async {
+    final hasPermission = await handleLocationPermission();
+
+    if (!hasPermission) return null;
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    return position;
+  }
+
   Future<bool> handleLocationPermission() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -10,7 +19,7 @@ mixin LocationHandler<T extends StatefulWidget> on State<T> {
     if (!serviceEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
-              'Location services are disabled. Please enable the services')));
+              'A localização está desabilitada, por favor habilite.')));
       return false;
     }
     permission = await Geolocator.checkPermission();
@@ -18,14 +27,14 @@ mixin LocationHandler<T extends StatefulWidget> on State<T> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permissions are denied')));
+            const SnackBar(content: Text('Foi negada a permissão de localização.')));
         return false;
       }
     }
     if (permission == LocationPermission.deniedForever) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
-              'Location permissions are permanently denied, we cannot request permissions.')));
+              'As permissões de localização foram negadas permanentemente.')));
       return false;
     }
     return true;
