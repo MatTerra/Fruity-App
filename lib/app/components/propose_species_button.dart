@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fruity/pages/propose_species.dart';
+import 'package:fruity/pages/propose_species_page.dart';
 
 class ProposeSpeciesButton extends StatelessWidget {
   const ProposeSpeciesButton({

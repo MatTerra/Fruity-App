@@ -16,7 +16,8 @@ class SpeciesHTTPRepository implements SpeciesRepository {
     var repository = SpeciesHTTPRepository._create();
     var token = (await FirebaseAuth.instance.currentUser?.getIdToken())!;
     repository.httpService = DefaultHTTPService(
-        "https://fruity-api.matterra.com.br",
+        //"https://fruity-api.matterra.com.br",
+      "http://10.0.2.2:8000",
         defaultHeaders: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
@@ -71,6 +72,14 @@ class SpeciesHTTPRepository implements SpeciesRepository {
   Future<bool> denySpecies(Species species) async {
     await httpService.post("/v1/species/${species.id}/deny", "");
     return true;
+  }
+
+  @override
+  Future<List<Species>> getSpeciesByPopularName(String popularName) async {
+    List<dynamic> speciesList =
+    (await httpService.get("/v1/species", query: {"popular_name": popularName}) as List)[1] as List;
+
+    return speciesList.map((s) => Species.fromJson(s)).toList();
   }
 
 

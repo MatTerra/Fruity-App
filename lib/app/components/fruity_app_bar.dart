@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fruity/app/components/profile_button.dart';
+import 'package:fruity/app/components/species_search_delegate.dart';
 
 class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -7,10 +8,10 @@ class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   final String title;
 
-  const FruityAppBar(
-    this.title, {
+  const FruityAppBar(this.title, {
     Key? key,
-  })  : preferredSize = const Size.fromHeight(50.0),
+  })
+      : preferredSize = const Size.fromHeight(50.0),
         super(key: key);
 
   @override
@@ -18,6 +19,10 @@ class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       automaticallyImplyLeading: true,
+      actions: [IconButton(onPressed: () {
+        showSearch(context: context, delegate: SpeciesSearchDelegate());
+      }, icon: const Icon(Icons.search))
+      ],
     );
   }
 }

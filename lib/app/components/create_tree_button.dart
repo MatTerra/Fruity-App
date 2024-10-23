@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fruity/domain/entities/species.dart';
 
-import 'package:fruity/pages/create_tree.dart';
+import 'package:fruity/pages/create_tree_page.dart';
 
 class CreateTreeButton extends StatelessWidget {
   Species species;

@@ -5,10 +5,7 @@ import 'package:fruity/domain/entities/species.dart';
 
 class SpeciesListItem extends StatelessWidget {
   final Species species;
-  const SpeciesListItem({
-    super.key,
-    required this.species
-  });
+  const SpeciesListItem({super.key, required this.species});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +28,10 @@ class SpeciesListItem extends StatelessWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Text(species.popularNames!.join(", "),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             Text(species.scientificName,
-                style: const TextStyle(
-                    fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
-            Text(species.popularNames!.join(", ")),
+                style: const TextStyle(fontStyle: FontStyle.italic)),
             const SizedBox(
               height: 7,
             )

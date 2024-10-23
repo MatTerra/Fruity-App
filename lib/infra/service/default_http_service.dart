@@ -14,7 +14,8 @@ class DefaultHTTPService implements HTTPService{
   @override
   Future<dynamic> get(String path, {Map<String, String> query = const {}, Map<String, String>? headers}) async {
     headers = prepareHeaders(headers ?? {});
-    var response = await httpClient.get(Uri.parse("${url}${path}"), headers: headers);
+    var queryString = prepareQuery(query);
+    var response = await httpClient.get(Uri.parse("${url}${path}${queryString}"), headers: headers);
     if (response.statusCode < 400){
       return jsonDecode(response.body);
     }
@@ -24,6 +25,18 @@ class DefaultHTTPService implements HTTPService{
   Map<String, String> prepareHeaders(Map<String, String> headers) {
     headers.addAll(defaultHeaders);
     return headers;
+  }
+
+  String prepareQuery(Map<String, String> query){
+    if(query.isEmpty){
+      return "";
+    }
+    var queryString = "?";
+    query.forEach((key, value) {
+      queryString += "${key}=${value}";
+      queryString += "&";
+    });
+    return queryString.substring(0, queryString.length - 1);
   }
 
   @override
