@@ -27,8 +27,13 @@ class FruityDrawer extends StatelessWidget {
             child: Column(
               children: [
                 Expanded(
-                  child: UserAvatar(
-                    auth: FirebaseAuth.instance,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/profile');
+                    },
+                    child: UserAvatar(
+                      auth: FirebaseAuth.instance,
+                    ),
                   ),
                 ),
                 Text(user?.displayName ?? user?.email ?? '')
@@ -72,10 +77,8 @@ class FruityDrawer extends StatelessWidget {
           ListTile(
             title: const Text('Mapa de Árvores'),
             onTap: () {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => TreeMapPage()));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => TreeMapPage()));
             },
           )
         ],

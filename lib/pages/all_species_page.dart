@@ -20,7 +20,7 @@ class AllSpeciesPage extends StatefulWidget {
   String title = "Espécies";
 
   @override
-  _AllSpeciesPageState createState() => _AllSpeciesPageState();
+  State<AllSpeciesPage> createState() => _AllSpeciesPageState();
 }
 
 class _AllSpeciesPageState extends State<AllSpeciesPage> {

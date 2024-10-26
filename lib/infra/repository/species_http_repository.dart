@@ -16,8 +16,7 @@ class SpeciesHTTPRepository implements SpeciesRepository {
     var repository = SpeciesHTTPRepository._create();
     var token = (await FirebaseAuth.instance.currentUser?.getIdToken())!;
     repository.httpService = DefaultHTTPService(
-        //"https://fruity-api.matterra.com.br",
-      "http://10.0.2.2:8000",
+        "https://fruity-api.matterra.com.br",
         defaultHeaders: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',

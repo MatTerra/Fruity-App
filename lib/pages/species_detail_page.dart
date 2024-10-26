@@ -154,21 +154,22 @@ class SpeciesDetailPage extends StatelessWidget {
   }
 
   void _approveSpecies(BuildContext context, bool approve) async {
+    var messengerState = ScaffoldMessenger.of(context);
+    var navigator = Navigator.of(context);
     var repository = await SpeciesHTTPRepository.create();
-    var result;
+    bool result;
     if (approve) {
       result = await repository.approveSpecies(species);
     } else {
       result = await repository.denySpecies(species);
     }
     if (result) {
-      Navigator.pushReplacement(
-          context,
+      navigator.pushReplacement(
           MaterialPageRoute(
               builder: (context) =>
                   AllSpeciesPage(pending: !approve)));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      messengerState.showSnackBar(const SnackBar(
           content: Text(
               'Não foi possível atualizar a espécie.')));
     }

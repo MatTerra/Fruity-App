@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fruity/app/components/profile_button.dart';
 import 'package:fruity/app/components/species_search_delegate.dart';
 
 class FruityAppBar extends StatelessWidget implements PreferredSizeWidget {
