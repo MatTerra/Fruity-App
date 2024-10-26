@@ -46,4 +46,10 @@ class SpeciesInMemoryRepository implements SpeciesRepository {
     // TODO: implement getUserProposalsSpecies
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<Species>> getSpeciesByPopularName(String popularName) {
+    // TODO: implement getSpeciesByPopularName
+    throw UnimplementedError();
+  }
 }
