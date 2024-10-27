@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -22,53 +24,57 @@ class CreateTreePage extends StatefulWidget {
 }
 
 class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
-  Position? _currentPosition;
   Set<Marker> treeMarker = {};
+  Completer<GoogleMapController> controller1 = Completer();
+  static LatLng? _initialPosition;
+  static LatLng? location;
+
   final _formKey = GlobalKey<FormBuilderState>();
   late TreeRepository repository;
-  late GoogleMapController mapController;
-  late LatLng location;
+
   bool loading = false;
 
   String savedValue = '';
 
   void _onMapCreated(GoogleMapController controller) async {
-    mapController = controller;
-    var repositoryFuture = TreeHTTPRepository.create();
-    repository = (await repositoryFuture) as TreeRepository;
-
-    Position? position = await getCurrentPosition();
-    if (position == null) return;
-    var marker = Marker(
-        markerId: const MarkerId("newTree"),
-        position: LatLng(position.latitude, position.longitude),
-        draggable: true,
-        onDragEnd: (value) {
-          setState(() {
-            location = value;
-          });
-        },
-        infoWindow: const InfoWindow(title: "Nova árvore"));
     setState(() {
-      _currentPosition = position;
-      location = LatLng(position.latitude, position.longitude);
-      treeMarker.add(marker);
+      controller1.complete(controller);
+      savedValue = _formKey.currentState?.value.toString() ?? '';
     });
   }
 
   @override
   void initState() {
-    savedValue = _formKey.currentState?.value.toString() ?? '';
-
-    TreeHTTPRepository.create().then((repository) {
-      this.repository = repository;
-    });
-
-    getCurrentPosition().then((value) => setState(() {
-          _currentPosition = value;
-        }));
-
     super.initState();
+    _getCurrentPosition();
+  }
+
+  Future<void> _getCurrentPosition() async {
+    var repositoryFuture = TreeHTTPRepository.create();
+    var position = await getCurrentPosition();
+    repository = (await repositoryFuture) as TreeRepository;
+
+    try {
+      setState(() {
+        _initialPosition = LatLng(position.latitude, position.longitude);
+        treeMarker = <Marker>{
+          Marker(
+              markerId: const MarkerId("newTree"),
+              position: LatLng(position.latitude, position.longitude),
+              draggable: true,
+              onDragEnd: (value) {
+                setState(() {
+                  location = value;
+                });
+              },
+              infoWindow: const InfoWindow(title: "Nova árvore"))
+        };
+      });
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Ocorreu um erro ao carregar as árvores, tente novamente.')));
+    }
   }
 
   @override
@@ -79,13 +85,11 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
           child: Column(children: [
         SizedBox(
             height: MediaQuery.of(context).size.height / 3,
-            child: GoogleMap(
+            child: _initialPosition == null ? const CircularProgressIndicator() : GoogleMap(
                 onMapCreated: _onMapCreated,
                 myLocationEnabled: true,
                 initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                        _currentPosition?.latitude ?? -15.79082045623587,
-                        _currentPosition?.longitude ?? -47.86114020307252),
+                    target: _initialPosition!,
                     zoom: 20.0),
                 markers: treeMarker)),
         const Text(
@@ -141,6 +145,8 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
   }
 
   void submit() {
+    if(location == null)
+      return;
     setState(() {
       loading = true;
     });
@@ -148,7 +154,7 @@ class _CreateTreePageState extends State<CreateTreePage> with LocationHandler {
     var formValues = _formKey.currentState!.value;
     var tree = Tree(
       species: widget.species,
-      location: location,
+      location: location!,
       description: formValues['description'],
       producing: formValues['producing'],
     );

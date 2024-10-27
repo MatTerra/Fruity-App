@@ -25,7 +25,6 @@ class _TreeMapPageState extends State<TreeMapPage> with LocationHandler {
   static LatLng? _initialPosition;
   String role = '';
   late User? user = FirebaseAuth.instance.currentUser;
-  late TreeRepository repository;
 
   void _onMapCreated(GoogleMapController controller) async {
     setState(() {
