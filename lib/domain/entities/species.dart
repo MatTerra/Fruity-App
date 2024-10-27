@@ -11,31 +11,35 @@ class Species {
   int? seasonStartMonth;
   int? seasonEndMonth;
   bool? approved;
+  bool? favorite;
   static Utf8Decoder utf8Decoder = const Utf8Decoder();
 
-  Species({this.id,
-    required this.creator,
-    required this.scientificName,
-    this.popularNames,
-    this.description,
-    this.links,
-    this.picturesUrl,
-    this.seasonStartMonth,
-    this.seasonEndMonth,
-    this.approved});
+  Species(
+      {this.id,
+      required this.creator,
+      required this.scientificName,
+      this.popularNames,
+      this.description,
+      this.links,
+      this.picturesUrl,
+      this.seasonStartMonth,
+      this.seasonEndMonth,
+      this.approved,
+      this.favorite});
 
   Species.fromJson(Map<String, dynamic> json)
       : id = json['id_'],
         creator = json['creator'],
         scientificName = formatName(json['scientific_name']),
         popularNames =
-        List<String>.from(json['popular_names']).map(formatName).toList(),
+            List<String>.from(json['popular_names']).map(formatName).toList(),
         description = utf8Decoder.convert(json['description'].codeUnits),
         links = List<String>.from(json['links']),
         picturesUrl = List<String>.from(json['pictures_url']),
         seasonStartMonth = json['season_start_month'],
         seasonEndMonth = json['season_end_month'],
-        approved = json['approved'];
+        approved = json['approved'],
+        favorite = json['favorite'];
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {
@@ -59,6 +63,8 @@ class Species {
     return json;
   }
 
-  static String formatName(String name) =>
-      name.isNotEmpty ? utf8Decoder.convert("${name[0].toUpperCase()}${name.substring(1)}".codeUnits) : "";
+  static String formatName(String name) => name.isNotEmpty
+      ? utf8Decoder
+          .convert("${name[0].toUpperCase()}${name.substring(1)}".codeUnits)
+      : "";
 }

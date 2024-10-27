@@ -35,8 +35,7 @@ class SpeciesDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const title = "Temporada";
     var content =
-        "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(
-        species.seasonEndMonth!)}";
+        "De ${toMonthName(species.seasonStartMonth!)} à ${toMonthName(species.seasonEndMonth!)}";
     return ValueListenableBuilder(
         valueListenable: loading,
         builder: (context, isLoading, child) {
@@ -48,14 +47,19 @@ class SpeciesDetailPage extends StatelessWidget {
               slivers: <Widget>[
                 SliverAppBar(
                   pinned: true,
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          species.favorite ?? false ? _unfavoriteSpecies(context) : _favoriteSpecies(context);
+                        },
+                        icon: Icon(species.favorite ?? false ? Icons.favorite : Icons.favorite_border)),
+                  ],
                   title: Text(
                     species.scientificName,
                     style: const TextStyle(fontStyle: FontStyle.italic),
                   ),
                   expandedHeight: 350.0,
-                  backgroundColor: Theme
-                      .of(context)
-                      .primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                   flexibleSpace: FlexibleSpaceBar(
                     background: ShaderMask(
                       shaderCallback: (bound) {
@@ -74,79 +78,79 @@ class SpeciesDetailPage extends StatelessWidget {
                       blendMode: BlendMode.srcOver,
                       child: species.picturesUrl!.isNotEmpty
                           ? Swiper(
-                        itemBuilder: (context, index) {
-                          final image = species.picturesUrl![index];
-                          return Image.network(
-                            image,
-                            fit: BoxFit.fitWidth,
-                          );
-                        },
-                        indicatorLayout: PageIndicatorLayout.COLOR,
-                        autoplay: true,
-                        itemCount: species.picturesUrl!.length,
-                        pagination: const SwiperPagination(),
-                        control: const SwiperControl(),
-                      )
+                              itemBuilder: (context, index) {
+                                final image = species.picturesUrl![index];
+                                return Image.network(
+                                  image,
+                                  fit: BoxFit.fitWidth,
+                                );
+                              },
+                              indicatorLayout: PageIndicatorLayout.COLOR,
+                              autoplay: true,
+                              itemCount: species.picturesUrl!.length,
+                              pagination: const SwiperPagination(),
+                              control: const SwiperControl(),
+                            )
                           : Image.asset('assets/tree-silhouette.png',
-                          fit: BoxFit.fitWidth),
+                              fit: BoxFit.fitWidth),
                     ),
                   ),
                 ),
                 SliverList(
                     delegate: SliverChildListDelegate([
-                      species.approved ?? true
-                          ? Container()
-                          : const SizedBox(
+                  species.approved ?? true
+                      ? Container()
+                      : const SizedBox(
                           height: 20,
                           child: Material(
                             color: Colors.red,
                             child: Center(
                                 child: Text(
-                                  "Aguardando aprovação!",
-                                  style: TextStyle(
-                                      fontSize: 15, color: Colors.white),
-                                )),
+                              "Aguardando aprovação!",
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.white),
+                            )),
                           )),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(species.popularNames!.join(", "),
-                            style: const TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold)),
-                      ),
-                      FieldWithTitle(title: title, content: content),
-                      FieldWithTitle(
-                          title: "Sobre", content: species.description ?? ""),
-                      species.approved ?? true
-                          ? Container()
-                          : Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          MaterialButton(
-                            onPressed: () {
-                              _approveSpecies(context, true);
-                            },
-                            child: isLoading as bool
-                                ? const CircularProgressIndicator(
-                              color: Colors.black,
-                              strokeWidth: 3,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(species.popularNames!.join(", "),
+                        style: const TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold)),
+                  ),
+                  FieldWithTitle(title: title, content: content),
+                  FieldWithTitle(
+                      title: "Sobre", content: species.description ?? ""),
+                  species.approved ?? true
+                      ? Container()
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            MaterialButton(
+                              onPressed: () {
+                                _approveSpecies(context, true);
+                              },
+                              child: isLoading as bool
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.black,
+                                      strokeWidth: 3,
+                                    )
+                                  : const Text("Aprovar"),
+                            ),
+                            MaterialButton(
+                              onPressed: () {
+                                _approveSpecies(context, false);
+                              },
+                              child: isLoading as bool
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.black,
+                                      strokeWidth: 3,
+                                    )
+                                  : const Text("Negar"),
                             )
-                                : const Text("Aprovar"),
-                          ),
-                          MaterialButton(
-                            onPressed: () {
-                              _approveSpecies(context, false);
-                            },
-                            child: isLoading as bool
-                                ? const CircularProgressIndicator(
-                              color: Colors.black,
-                              strokeWidth: 3,
-                            )
-                                : const Text("Negar"),
-                          )
-                        ],
-                      )
-                    ]))
+                          ],
+                        )
+                ]))
               ],
             ),
           );
@@ -164,14 +168,31 @@ class SpeciesDetailPage extends StatelessWidget {
       result = await repository.denySpecies(species);
     }
     if (result) {
-      navigator.pushReplacement(
-          MaterialPageRoute(
-              builder: (context) =>
-                  AllSpeciesPage(pending: !approve)));
+      navigator.pushReplacement(MaterialPageRoute(
+          builder: (context) => AllSpeciesPage(pending: !approve)));
     } else {
       messengerState.showSnackBar(const SnackBar(
-          content: Text(
-              'Não foi possível atualizar a espécie.')));
+          content: Text('Não foi possível atualizar a espécie.')));
+    }
+  }
+
+  void _favoriteSpecies(BuildContext context) async {
+    var messengerState = ScaffoldMessenger.of(context);
+    var repository = await SpeciesHTTPRepository.create();
+
+    if (!await repository.favoriteSpecies(species.id!)) {
+      messengerState.showSnackBar(const SnackBar(
+          content: Text('Não foi possível atualizar os favoritos.')));
+    }
+  }
+
+  void _unfavoriteSpecies(BuildContext context) async {
+    var messengerState = ScaffoldMessenger.of(context);
+    var repository = await SpeciesHTTPRepository.create();
+
+    if (!await repository.unfavoriteSpecies(species.id!)) {
+      messengerState.showSnackBar(const SnackBar(
+          content: Text('Não foi possível atualizar os favoritos.')));
     }
   }
 }

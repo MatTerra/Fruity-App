@@ -9,4 +9,6 @@ abstract class SpeciesRepository {
   Future<Species> createSpecies(Species species);
   Future<bool> approveSpecies(Species species);
   Future<bool> denySpecies(Species species);
+  Future<bool> favoriteSpecies(String id);
+  Future<bool> unfavoriteSpecies(String id);
 }

@@ -41,7 +41,7 @@ class SpeciesHTTPRepository implements SpeciesRepository {
   @override
   Future<List<Species>> getPendingSpecies() async {
     List<dynamic> speciesList =
-    (await httpService.get("/v1/species/pending") as List)[1] as List;
+        (await httpService.get("/v1/species/pending") as List)[1] as List;
 
     return speciesList.map((s) => Species.fromJson(s)).toList();
   }
@@ -49,7 +49,7 @@ class SpeciesHTTPRepository implements SpeciesRepository {
   @override
   Future<List<Species>> getUserProposalsSpecies() async {
     List<dynamic> speciesList =
-    (await httpService.get("/v1/species/my-species") as List)[1] as List;
+        (await httpService.get("/v1/species/my-species") as List)[1] as List;
 
     return speciesList.map((s) => Species.fromJson(s)).toList();
   }
@@ -75,11 +75,21 @@ class SpeciesHTTPRepository implements SpeciesRepository {
 
   @override
   Future<List<Species>> getSpeciesByPopularName(String popularName) async {
-    List<dynamic> speciesList =
-    (await httpService.get("/v1/species", query: {"popular_name": popularName}) as List)[1] as List;
+    List<dynamic> speciesList = (await httpService.get("/v1/species",
+        query: {"popular_name": popularName}) as List)[1] as List;
 
     return speciesList.map((s) => Species.fromJson(s)).toList();
   }
 
+  @override
+  Future<bool> favoriteSpecies(String id) async {
+    await httpService.post("/v1/species/favorite", "{\"species\":\"$id\"}");
+    return true;
+  }
 
+  @override
+  Future<bool> unfavoriteSpecies(String id) async {
+    await httpService.post("/v1/species/unfavorite", "{\"species\":\"$id\"}");
+    return true;
+  }
 }
